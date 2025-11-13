@@ -237,6 +237,10 @@
         }
 
         @media (max-width: 768px) {
+            .header {
+                padding: 1.5rem 1rem;
+            }
+
             .header-content {
                 flex-direction: column;
                 align-items: flex-start;
@@ -247,6 +251,10 @@
                 font-size: 2rem;
             }
 
+            .subtitle {
+                font-size: 1rem;
+            }
+
             .header-links {
                 width: 100%;
             }
@@ -254,6 +262,62 @@
             .header-link {
                 flex: 1;
                 text-align: center;
+            }
+
+            .container {
+                padding: 0 0.5rem;
+            }
+
+            .controls {
+                padding: 1rem;
+            }
+
+            .stats {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .collection-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .collection-item {
+                padding: 1rem;
+            }
+
+            .item-title {
+                font-size: 1.1rem;
+            }
+
+            .item-actions {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+
+            .search-box {
+                font-size: 16px; /* Prevents iOS zoom on focus */
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header {
+                padding: 1rem 0.75rem;
+            }
+
+            h1 {
+                font-size: 1.75rem;
+            }
+
+            .controls {
+                padding: 0.75rem;
+            }
+
+            .collection-item {
+                padding: 0.75rem;
             }
         }
     </style>
