@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Toyo Bunko Manuscript Kanjur Viewer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 1rem;
+        }
+
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 3rem 2rem;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.95;
+            margin-bottom: 1rem;
+        }
+
+        .content {
+            padding: 2.5rem 2rem;
+        }
+
+        .section {
+            margin-bottom: 2.5rem;
+        }
+
+        .section h2 {
+            color: #667eea;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 0.5rem;
+        }
+
+        .section p {
+            color: #666;
+            line-height: 1.8;
+            margin-bottom: 1rem;
+        }
+
+        .feature-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .feature-list li {
+            padding: 0.75rem 0;
+            padding-left: 2rem;
+            position: relative;
+            color: #555;
+        }
+
+        .feature-list li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #667eea;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .form-section {
+            background: #f8f9fa;
+            padding: 2rem;
+            border-radius: 8px;
+            margin-top: 1.5rem;
+        }
+
+        .form-section h3 {
+            color: #333;
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #555;
+            font-weight: 500;
+        }
+
+        input[type="text"],
+        input[type="url"],
+        select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 0.875rem 1.5rem;
+            border: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            text-align: center;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+
+        .btn-secondary:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .help-text {
+            font-size: 0.875rem;
+            color: #888;
+            margin-top: 0.5rem;
+        }
+
+        .quick-links {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .quick-link-card {
+            background: white;
+            border: 2px solid #eee;
+            border-radius: 8px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.3s;
+            text-decoration: none;
+            color: #333;
+        }
+
+        .quick-link-card:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+        }
+
+        .quick-link-card .icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .quick-link-card .title {
+            font-weight: 600;
+            color: #667eea;
+            margin-bottom: 0.25rem;
+        }
+
+        .quick-link-card .desc {
+            font-size: 0.875rem;
+            color: #888;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            .content {
+                padding: 1.5rem 1rem;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📚 TEI/XML Viewer</h1>
+            <p class="subtitle">デジタルテキストアーカイブビューア</p>
+        </div>
+
+        <div class="content">
+            <div class="section">
+                <h2>概要</h2>
+                <p>
+                    TEI/XML形式でエンコードされたデジタルテキストを閲覧するためのWebアプリケーションです。
+                    高精細なIIIF画像と、OCRによって抽出されたテキストデータを統合して表示します。
+                </p>
+                <ul class="feature-list">
+                    <li>TEI XMLフォーマット対応</li>
+                    <li>IIIF対応の高精細画像表示</li>
+                    <li>画像とテキストの同期表示</li>
+                    <li>行単位のアノテーション表示</li>
+                    <li>全文検索機能</li>
+                    <li>縦書き・横書き両対応</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <div class="form-section">
+                    <h3>コレクションを開く</h3>
+                    <p style="color: #666; margin-bottom: 1.5rem;">
+                        DTS Collections JSONのURLを入力してコレクションを閲覧できます。
+                    </p>
+
+                    <div class="form-group">
+                        <label for="collectionInput">コレクションURL</label>
+                        <input
+                            type="text"
+                            id="collectionInput"
+                            placeholder="例: http://localhost:8000/manuscript_kanjur/docs/json/dts_collections.json"
+                        >
+                        <p class="help-text">
+                            DTS Collections JSON形式のコレクションURLを入力してください
+                        </p>
+                    </div>
+
+                    <div class="button-group">
+                        <button class="btn btn-primary" onclick="openCollection()">コレクションを開く</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="form-section">
+                    <h3>文書を開く</h3>
+                    <p style="color: #666; margin-bottom: 1.5rem;">
+                        文書のUUID、IIIF Manifest URL、またはTEI XMLファイルのURLを入力してください。
+                    </p>
+
+                    <div class="form-group">
+                        <label for="documentInput">文書URL または UUID</label>
+                        <input
+                            type="text"
+                            id="documentInput"
+                            placeholder="例: 001-01.xml, https://..., または UUID"
+                        >
+                        <p class="help-text">
+                            TEI XMLファイル名、IIIF ManifestのURL、または文書のUUIDを入力できます
+                        </p>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="viewMode">表示モード</label>
+                        <select id="viewMode">
+                            <option value="horizontal">横書き（左から右）</option>
+                            <option value="vertical" selected>縦書き（右から左）</option>
+                        </select>
+                    </div>
+
+                    <div class="button-group">
+                        <button class="btn btn-primary" onclick="openDocument()">開く</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>使い方</h2>
+                <p><strong>1. コレクションから選ぶ</strong></p>
+                <p>「コレクション一覧」から写本を選択し、表示したいページに移動できます。</p>
+
+                <p style="margin-top: 1rem;"><strong>2. コレクションURLで開く</strong></p>
+                <p>上記のフォームにDTS Collections JSONのURLを入力してコレクションを閲覧できます。</p>
+
+                <p style="margin-top: 1rem;"><strong>3. 文書を直接URLで開く</strong></p>
+                <p>フォームに文書のUUIDやURLを入力して直接開くこともできます。</p>
+
+                <p style="margin-top: 1rem;"><strong>4. URLパラメータを使う</strong></p>
+                <p>以下の形式でURLを作成できます：</p>
+                <code style="display: block; background: #f5f5f5; padding: 0.5rem; border-radius: 4px; margin-top: 0.5rem;">
+                    # コレクションを開く<br>
+                    ?u=http://localhost:8000/manuscript_kanjur/docs/json/dts_collections.json
+                </code>
+                <code style="display: block; background: #f5f5f5; padding: 0.5rem; border-radius: 4px; margin-top: 0.5rem;">
+                    # 文書を開く<br>
+                    ?file=001-01.xml&page=3&vertical=true
+                </code>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Check if URL parameters are provided
+        window.addEventListener('DOMContentLoaded', () => {
+            const params = new URLSearchParams(window.location.search);
+            const collectionParam = params.get('u');
+            const fileParam = params.get('file');
+
+            // If 'u' parameter is provided (collection URL)
+            if (collectionParam) {
+                // Check if it looks like a collection URL (contains 'collection' or ends with .json)
+                if (collectionParam.includes('collection') || collectionParam.endsWith('.json')) {
+                    // Redirect to collection viewer
+                    window.location.href = `collection.html?u=${encodeURIComponent(collectionParam)}`;
+                } else {
+                    // Backward compatibility: treat as file parameter
+                    const page = params.get('page') || '1';
+                    const vertical = params.get('vertical') || 'true';
+
+                    let viewerUrl = `item.html?file=${encodeURIComponent(collectionParam)}`;
+                    viewerUrl += `&page=${page}`;
+                    viewerUrl += `&vertical=${vertical}`;
+
+                    window.location.href = viewerUrl;
+                }
+            } else if (fileParam) {
+                // If 'file' parameter is provided (document URL)
+                const page = params.get('page') || '1';
+                const vertical = params.get('vertical') || 'true';
+
+                let viewerUrl = `item.html?file=${encodeURIComponent(fileParam)}`;
+                viewerUrl += `&page=${page}`;
+                viewerUrl += `&vertical=${vertical}`;
+
+                window.location.href = viewerUrl;
+            }
+        });
+
+        function openCollection() {
+            const input = document.getElementById('collectionInput').value.trim();
+
+            if (!input) {
+                alert('コレクションURLを入力してください');
+                return;
+            }
+
+            // Redirect to collection viewer with URL parameter
+            window.location.href = `collection.html?u=${encodeURIComponent(input)}`;
+        }
+
+        function openDocument() {
+            const input = document.getElementById('documentInput').value.trim();
+            const mode = document.getElementById('viewMode').value;
+
+            if (!input) {
+                alert('文書URL または UUIDを入力してください');
+                return;
+            }
+
+            // Determine if input is a UUID, URL, or filename
+            let docUrl = input;
+
+            // If it's just a UUID or filename without extension, add .xml
+            if (!input.includes('/') && !input.includes('.')) {
+                docUrl = input + '.xml';
+            }
+
+            // Build viewer URL
+            const vertical = mode === 'vertical' ? 'true' : 'false';
+            const viewerUrl = `item.html?file=${encodeURIComponent(docUrl)}&vertical=${vertical}`;
+
+            window.location.href = viewerUrl;
+        }
+
+        // Allow Enter key to open collection
+        document.getElementById('collectionInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                openCollection();
+            }
+        });
+
+        // Allow Enter key to open document
+        document.getElementById('documentInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                openDocument();
+            }
+        });
+    </script>
+</body>
+</html>

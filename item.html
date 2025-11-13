@@ -1,0 +1,1204 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TEI Viewer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Tibetan:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/openseadragon/4.1.0/openseadragon.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            height: 100vh;
+            overflow: hidden;
+            background: #f5f5f5;
+        }
+
+        #header {
+            background: #2c3e50;
+            color: white;
+            padding: 15px 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+        }
+
+        #header h1 {
+            font-size: 20px;
+            font-weight: 500;
+            flex: 1;
+        }
+
+        .header-links {
+            display: flex;
+            gap: 10px;
+        }
+
+        #home-link,
+        #back-link,
+        #xml-link {
+            color: #3498db;
+            text-decoration: none;
+            padding: 8px 15px;
+            background: white;
+            border-radius: 4px;
+            font-size: 14px;
+            transition: background 0.2s;
+        }
+
+        #home-link:hover,
+        #back-link:hover,
+        #xml-link:hover {
+            background: #ecf0f1;
+        }
+
+        #main-container {
+            display: flex;
+            height: calc(100vh - 60px);
+        }
+
+        #viewer-panel {
+            flex: 1;
+            position: relative;
+            background: #000;
+        }
+
+        #text-panel {
+            width: 45%;
+            background: white;
+            overflow-y: auto;
+            border-left: 1px solid #ddd;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #controls {
+            padding: 15px;
+            background: #ecf0f1;
+            border-bottom: 1px solid #ddd;
+        }
+
+        #page-navigation {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        #page-info {
+            font-size: 14px;
+            font-weight: 600;
+            color: #2c3e50;
+            padding: 8px 12px;
+            background: white;
+            border-radius: 4px;
+            min-width: 100px;
+            text-align: center;
+        }
+
+        .nav-button {
+            padding: 8px 12px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .nav-button:hover {
+            background: #2980b9;
+        }
+
+        .nav-button:disabled {
+            background: #bdc3c7;
+            cursor: not-allowed;
+        }
+
+        #page-selector {
+            flex: 1;
+            padding: 8px;
+            font-size: 14px;
+            border: 1px solid #bdc3c7;
+            border-radius: 4px;
+            background: white;
+        }
+
+        #text-content {
+            flex: 1;
+            padding: 20px;
+            line-height: 2.0;
+            font-size: 18px;
+            overflow-y: auto;
+            font-family: 'Noto Serif Tibetan', 'Jomolhari', serif;
+        }
+
+        #text-content.vertical {
+            writing-mode: vertical-rl;
+            overflow-x: auto;
+            overflow-y: hidden;
+            padding: 20px;
+        }
+
+        .text-line {
+            padding: 5px;
+            margin: 2px 0;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            border-radius: 3px;
+        }
+
+        .vertical .text-line {
+            margin: 0 2px;
+            display: block;
+        }
+
+        .text-line:hover {
+            background-color: #e8f4f8;
+        }
+
+        .text-line.selected {
+            background-color: #fef9e7;
+            border-left: 3px solid #f39c12;
+            padding-left: 8px;
+        }
+
+        .line-number {
+            display: none;
+        }
+
+        #openseadragon {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Right-to-left layout for vertical mode */
+        #openseadragon.rtl-mode {
+            direction: rtl;
+        }
+
+        #openseadragon.rtl-mode .referencestrip {
+            direction: rtl;
+        }
+
+        #toggle-boxes {
+            margin-top: 10px;
+            padding: 8px 15px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            width: 100%;
+            transition: background 0.2s;
+        }
+
+        #toggle-boxes:hover {
+            background: #2980b9;
+        }
+
+        #toggle-boxes.active {
+            background: #27ae60;
+        }
+
+        #toggle-boxes.active:hover {
+            background: #229954;
+        }
+
+        #toggle-boxes.inactive {
+            background: #95a5a6;
+        }
+
+        #toggle-boxes.inactive:hover {
+            background: #7f8c8d;
+        }
+
+        #search-box {
+            margin-top: 10px;
+            padding: 8px;
+            width: 100%;
+            border: 1px solid #bdc3c7;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .highlight {
+            background-color: #fff59d;
+        }
+
+        #loading {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            z-index: 10000;
+        }
+
+        #error {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #e74c3c;
+            color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            z-index: 10000;
+        }
+
+        #search-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #search-modal.active {
+            display: flex;
+        }
+
+        #search-modal-content {
+            background: white;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+
+        #search-modal-header {
+            padding: 20px;
+            border-bottom: 1px solid #ddd;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        #search-modal-header h2 {
+            margin: 0;
+            font-size: 20px;
+            color: #2c3e50;
+        }
+
+        #close-search-modal {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #7f8c8d;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            line-height: 30px;
+            text-align: center;
+        }
+
+        #close-search-modal:hover {
+            color: #2c3e50;
+        }
+
+        #search-modal-body {
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        #global-search-input {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            border: 2px solid #3498db;
+            border-radius: 4px;
+            margin-bottom: 15px;
+        }
+
+        #search-results {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .search-result-item {
+            padding: 12px;
+            border-bottom: 1px solid #ecf0f1;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .search-result-item:hover {
+            background: #ecf0f1;
+        }
+
+        .search-result-page {
+            font-weight: bold;
+            color: #3498db;
+            margin-bottom: 5px;
+        }
+
+        .search-result-text {
+            color: #2c3e50;
+            line-height: 1.5;
+        }
+
+        .search-result-text mark {
+            background: #fff59d;
+            padding: 2px 4px;
+            border-radius: 2px;
+        }
+
+        #search-status {
+            color: #7f8c8d;
+            text-align: center;
+            padding: 20px;
+        }
+
+        #open-search-modal {
+            margin-top: 10px;
+            padding: 8px 15px;
+            background: #e67e22;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            width: 100%;
+            transition: background 0.2s;
+        }
+
+        #open-search-modal:hover {
+            background: #d35400;
+        }
+    </style>
+</head>
+<body>
+    <div id="loading">読み込み中...</div>
+    <div id="error"></div>
+
+    <div id="header">
+        <h1 id="doc-title">TEI Viewer</h1>
+        <div class="header-links">
+            <a id="home-link" href="index.html">🏠 ホーム</a>
+            <a id="back-link" href="collection.html">← Collection</a>
+            <a id="xml-link" href="#" target="_blank">TEI/XML を表示</a>
+        </div>
+    </div>
+
+    <div id="main-container">
+        <div id="viewer-panel">
+            <div id="openseadragon"></div>
+        </div>
+
+        <div id="text-panel">
+            <div id="controls">
+                <div id="page-navigation">
+                    <button class="nav-button" id="prev-page">◀</button>
+                    <div id="page-info">1 / 1</div>
+                    <button class="nav-button" id="next-page">▶</button>
+                    <select id="page-selector"></select>
+                </div>
+                <button id="toggle-boxes">枠線を表示/非表示</button>
+                <button id="open-search-modal">🔍 全ページ検索</button>
+                <input type="text" id="search-box" placeholder="現在のページ内検索...">
+            </div>
+            <div id="text-content"></div>
+        </div>
+    </div>
+
+    <div id="search-modal">
+        <div id="search-modal-content">
+            <div id="search-modal-header">
+                <h2>全ページ検索</h2>
+                <button id="close-search-modal">×</button>
+            </div>
+            <div id="search-modal-body">
+                <input type="text" id="global-search-input" placeholder="検索キーワードを入力...">
+                <div id="search-results">
+                    <div id="search-status">検索キーワードを入力してください</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let data = null;
+        let viewer = null;
+        let currentPageIndex = 0;
+        let overlay = null;
+        let showBoxes = true;
+        let selectedLineIndex = -1;
+        let isVertical = false;
+
+        // Get file parameter from URL
+        function getFileParameter() {
+            const params = new URLSearchParams(window.location.search);
+            const id = params.get('id');
+            const file = params.get('file');
+
+            // If 'id' parameter is provided, construct path to XML file
+            if (id) {
+                return `${id}.xml`;
+            }
+
+            // Fallback to 'file' parameter
+            return file || '';
+        }
+
+        // Get page parameter from URL
+        function getPageParameter() {
+            const params = new URLSearchParams(window.location.search);
+            const page = params.get('page');
+            const result = page ? parseInt(page) - 1 : 0; // Convert 1-based to 0-based
+            console.log('getPageParameter:', page, '→', result);
+            return result;
+        }
+
+        // Get vertical parameter from URL
+        function getVerticalParameter() {
+            const params = new URLSearchParams(window.location.search);
+            return params.get('vertical') === 'true';
+        }
+
+        // Update URL with current page
+        function updateURL(pageIndex) {
+            const params = new URLSearchParams(window.location.search);
+            params.set('page', pageIndex + 1); // Convert 0-based to 1-based
+            const newURL = window.location.pathname + '?' + params.toString();
+            window.history.pushState({ page: pageIndex }, '', newURL);
+        }
+
+        // Parse TEI XML
+        function parseTEIXML(xmlDoc) {
+            const TEI_NS = 'http://www.tei-c.org/ns/1.0';
+
+            // Extract title
+            const titleElem = xmlDoc.querySelector('titleStmt title');
+            const title = titleElem ? titleElem.textContent : 'TEI Document';
+
+            // Extract pages from facsimile
+            const surfaces = xmlDoc.querySelectorAll('facsimile surface');
+            const pages = [];
+
+            for (const surface of surfaces) {
+                const pageId = surface.getAttribute('xml:id') || '';
+                const pageNum = surface.getAttribute('n') || '';
+
+                // Get image info
+                const graphic = surface.querySelector('graphic');
+                if (!graphic) continue;
+
+                const imageUrl = graphic.getAttribute('url') || '';
+                let width = parseInt(surface.getAttribute('lrx')) || 0;
+                let height = parseInt(surface.getAttribute('lry')) || 0;
+
+                // Extract zones
+                const zones = [];
+                const zoneElems = surface.querySelectorAll('zone');
+                zoneElems.forEach(zone => {
+                    const zoneId = zone.getAttribute('xml:id') || '';
+                    const ulx = parseInt(zone.getAttribute('ulx')) || 0;
+                    const uly = parseInt(zone.getAttribute('uly')) || 0;
+                    const lrx = parseInt(zone.getAttribute('lrx')) || 0;
+                    const lry = parseInt(zone.getAttribute('lry')) || 0;
+
+                    zones.push({
+                        id: zoneId,
+                        coords: [[ulx, uly], [lrx, uly], [lrx, lry], [ulx, lry]]
+                    });
+                });
+
+                // If width/height is 0, calculate from zone coordinates
+                if (width === 0 || height === 0) {
+                    let maxX = 0;
+                    let maxY = 0;
+                    zones.forEach(zone => {
+                        zone.coords.forEach(coord => {
+                            maxX = Math.max(maxX, coord[0]);
+                            maxY = Math.max(maxY, coord[1]);
+                        });
+                    });
+                    width = maxX || width;
+                    height = maxY || height;
+                }
+
+                // If still 0 and has IIIF service, mark for lazy loading
+                if ((width === 0 || height === 0) && imageUrl.includes('/full/')) {
+                    // Will fetch on demand when overlay is needed
+                    width = -1;  // Mark as needs fetching
+                    height = -1;
+                }
+
+                pages.push({
+                    id: pageId,
+                    n: pageNum,
+                    imageUrl: imageUrl,
+                    iiifService: imageUrl.includes('/full/') ? imageUrl.split('/full/')[0] : imageUrl,
+                    width: width,
+                    height: height,
+                    zones: zones,
+                    lines: []
+                });
+            }
+
+            // Extract text content
+            const body = xmlDoc.querySelector('body');
+            if (body) {
+                const p = body.querySelector('p');
+                if (p) {
+                    let currentPageIdx = -1;
+
+                    Array.from(p.children).forEach(elem => {
+                        if (elem.tagName === 'pb') {
+                            currentPageIdx++;
+                        } else if (elem.tagName === 'lb') {
+                            if (currentPageIdx >= 0 && currentPageIdx < pages.length) {
+                                const corresp = elem.getAttribute('corresp') || '';
+                                const zoneId = corresp.replace('#', '');
+                                const lineNum = elem.getAttribute('n') || '';
+
+                                // Try to get text from both textContent and nextSibling
+                                let textContent = '';
+                                if (elem.textContent && elem.textContent.trim()) {
+                                    textContent = elem.textContent;
+                                } else if (elem.nextSibling && elem.nextSibling.nodeType === Node.TEXT_NODE) {
+                                    textContent = elem.nextSibling.textContent;
+                                }
+
+                                // Find matching zone
+                                let zoneCoords = null;
+                                for (const zone of pages[currentPageIdx].zones) {
+                                    if (zone.id === zoneId) {
+                                        zoneCoords = zone.coords;
+                                        break;
+                                    }
+                                }
+
+                                if (zoneCoords && textContent.trim()) {
+                                    pages[currentPageIdx].lines.push({
+                                        n: lineNum,
+                                        text: textContent.trim(),
+                                        coords: zoneCoords,
+                                        zoneId: zoneId
+                                    });
+                                }
+                            }
+                        }
+                    });
+                }
+            }
+
+            return {
+                title: title,
+                pages: pages
+            };
+        }
+
+        // Load TEI XML file
+        async function loadTEIFile(filename) {
+            try {
+                const response = await fetch(filename);
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ファイルが見つかりません - ${filename}`);
+                }
+                const xmlText = await response.text();
+                const parser = new DOMParser();
+                const xmlDoc = parser.parseFromString(xmlText, 'text/xml');
+
+                // Check for parsing errors
+                const parseError = xmlDoc.querySelector('parsererror');
+                if (parseError) {
+                    throw new Error('XMLの解析に失敗しました');
+                }
+
+                data = parseTEIXML(xmlDoc);
+                document.getElementById('doc-title').textContent = data.title;
+
+                // Set XML link
+                const xmlLink = document.getElementById('xml-link');
+                xmlLink.href = filename;
+
+                document.getElementById('loading').style.display = 'none';
+
+                initViewer();
+            } catch (error) {
+                document.getElementById('loading').style.display = 'none';
+                const errorDiv = document.getElementById('error');
+
+                // Enhanced error message
+                let errorMessage = `エラー: ${error.message}`;
+                if (error.message.includes('Failed to fetch') || error.name === 'TypeError') {
+                    errorMessage += '\n\nネットワークエラーが発生しました。異なるドメインから読み込む場合は、CORSが有効になっている必要があります。';
+                }
+
+                errorDiv.innerHTML = `<p>${errorMessage.replace(/\n/g, '<br>')}</p>
+                                      <p style="font-size: 0.9rem; margin-top: 1rem;">ファイル: ${filename}</p>`;
+                errorDiv.style.display = 'block';
+                console.error('Error loading TEI file:', error);
+            }
+        }
+
+        function initViewer() {
+            const pageSelector = document.getElementById('page-selector');
+            const prevButton = document.getElementById('prev-page');
+            const nextButton = document.getElementById('next-page');
+
+            // Apply vertical writing mode if specified
+            isVertical = getVerticalParameter();
+            const textContent = document.getElementById('text-content');
+            if (isVertical) {
+                textContent.classList.add('vertical');
+                // Add RTL mode to OpenSeadragon container
+                document.getElementById('openseadragon').classList.add('rtl-mode');
+            }
+
+            data.pages.forEach((page, index) => {
+                const option = document.createElement('option');
+                option.value = index;
+                option.textContent = `Page ${page.n || index + 1}`;
+                pageSelector.appendChild(option);
+            });
+
+            pageSelector.addEventListener('change', (e) => {
+                loadPage(parseInt(e.target.value));
+            });
+
+            // Button behavior for vertical mode
+            prevButton.addEventListener('click', () => {
+                if (isVertical) {
+                    // Vertical mode: left button = next page (進む)
+                    if (currentPageIndex < data.pages.length - 1) {
+                        loadPage(currentPageIndex + 1);
+                    }
+                } else {
+                    // Horizontal mode: left button = previous page
+                    if (currentPageIndex > 0) {
+                        loadPage(currentPageIndex - 1);
+                    }
+                }
+            });
+
+            nextButton.addEventListener('click', () => {
+                if (isVertical) {
+                    // Vertical mode: right button = previous page (戻る)
+                    if (currentPageIndex > 0) {
+                        loadPage(currentPageIndex - 1);
+                    }
+                } else {
+                    // Horizontal mode: right button = next page
+                    if (currentPageIndex < data.pages.length - 1) {
+                        loadPage(currentPageIndex + 1);
+                    }
+                }
+            });
+
+            document.getElementById('toggle-boxes').addEventListener('click', () => {
+                showBoxes = !showBoxes;
+                updateToggleButton();
+                updateOverlay();
+            });
+
+            // Initialize button state
+            updateToggleButton();
+
+            document.getElementById('search-box').addEventListener('input', (e) => {
+                searchText(e.target.value);
+            });
+
+            // Global search modal
+            document.getElementById('open-search-modal').addEventListener('click', () => {
+                openSearchModal();
+            });
+
+            document.getElementById('close-search-modal').addEventListener('click', () => {
+                closeSearchModal();
+            });
+
+            // Close modal when clicking outside
+            document.getElementById('search-modal').addEventListener('click', (e) => {
+                if (e.target.id === 'search-modal') {
+                    closeSearchModal();
+                }
+            });
+
+            document.getElementById('global-search-input').addEventListener('input', (e) => {
+                globalSearch(e.target.value);
+            });
+
+            // Initialize OpenSeadragon with all pages
+            // (initialPage is set in initializeViewer)
+            initializeViewer();
+        }
+
+        function updateNavigationButtons() {
+            const prevButton = document.getElementById('prev-page');
+            const nextButton = document.getElementById('next-page');
+            const pageSelector = document.getElementById('page-selector');
+            const pageInfo = document.getElementById('page-info');
+
+            if (isVertical) {
+                // Vertical mode: left = next, right = prev
+                prevButton.disabled = currentPageIndex === data.pages.length - 1;
+                nextButton.disabled = currentPageIndex === 0;
+            } else {
+                // Horizontal mode: left = prev, right = next
+                prevButton.disabled = currentPageIndex === 0;
+                nextButton.disabled = currentPageIndex === data.pages.length - 1;
+            }
+
+            pageSelector.value = currentPageIndex;
+
+            // Update page info display
+            if (pageInfo) {
+                pageInfo.textContent = `${currentPageIndex + 1} / ${data.pages.length}`;
+            }
+        }
+
+        function updateToggleButton() {
+            const toggleButton = document.getElementById('toggle-boxes');
+            if (showBoxes) {
+                toggleButton.textContent = '✓ 枠線を表示中';
+                toggleButton.classList.remove('inactive');
+                toggleButton.classList.add('active');
+            } else {
+                toggleButton.textContent = '枠線を非表示中';
+                toggleButton.classList.remove('active');
+                toggleButton.classList.add('inactive');
+            }
+        }
+
+        function initializeViewer() {
+            // Prepare all tile sources
+            let tileSources = data.pages.map(page => {
+                if (page.iiifService && page.iiifService.includes('iiif')) {
+                    return page.iiifService + '/info.json';
+                } else {
+                    return {
+                        type: 'image',
+                        url: page.imageUrl
+                    };
+                }
+            });
+
+            // Reverse tile sources for vertical (RTL) mode
+            if (isVertical) {
+                tileSources = tileSources.reverse();
+            }
+
+            // Calculate initial OSD page index
+            const initialDataPage = getPageParameter();
+            const initialOsdPage = dataIndexToOsdIndex(initialDataPage);
+            console.log('initializeViewer: initialDataPage', initialDataPage, '→ initialOsdPage', initialOsdPage, 'isVertical:', isVertical);
+
+            viewer = OpenSeadragon({
+                id: "openseadragon",
+                tileSources: tileSources,
+                sequenceMode: true,
+                initialPage: initialOsdPage,  // Start at the correct page
+                showReferenceStrip: false,
+                referenceStripScroll: 'horizontal',
+                prefixUrl: "https://cdnjs.cloudflare.com/ajax/libs/openseadragon/4.1.0/images/",
+                showNavigationControl: true,
+                showRotationControl: true,
+                showHomeControl: true,
+                showFullPageControl: true,
+                showZoomControl: true,
+                showSequenceControl: false,
+                gestureSettingsMouse: {
+                    clickToZoom: false
+                },
+                maxZoomPixelRatio: 3,
+                minZoomImageRatio: 0.8,
+                visibilityRatio: 0.5,
+                animationTime: 0.5
+            });
+
+            // Custom keyboard navigation
+            viewer.addHandler('canvas-key', (event) => {
+                const key = event.originalEvent.keyCode;
+
+                // Arrow left key (37) and Arrow right key (39)
+                if (key === 37 || key === 39) {
+                    event.preventDefaultAction = true;
+
+                    if (isVertical) {
+                        // Vertical mode: left = next, right = prev
+                        if (key === 37 && currentPageIndex < data.pages.length - 1) {
+                            loadPage(currentPageIndex + 1);
+                        } else if (key === 39 && currentPageIndex > 0) {
+                            loadPage(currentPageIndex - 1);
+                        }
+                    } else {
+                        // Horizontal mode: left = prev, right = next
+                        if (key === 37 && currentPageIndex > 0) {
+                            loadPage(currentPageIndex - 1);
+                        } else if (key === 39 && currentPageIndex < data.pages.length - 1) {
+                            loadPage(currentPageIndex + 1);
+                        }
+                    }
+                }
+            });
+
+            // Listen for page changes in OSD
+            viewer.addHandler('page', (event) => {
+                onPageChanged(event.page);
+            });
+
+            // Update overlay after animation completes (when page is fully visible)
+            viewer.addHandler('animation-finish', () => {
+                updateOverlay();
+            });
+
+            // Update overlay when the viewer is fully open and ready
+            viewer.addHandler('open', () => {
+                // Small delay to ensure the first item is available
+                setTimeout(() => {
+                    // Display initial text and update navigation
+                    const initialDataPage = getPageParameter();
+                    currentPageIndex = initialDataPage;
+                    displayText(data.pages[initialDataPage]);
+                    updateNavigationButtons();
+                    updateOverlay();
+                }, 50);
+            });
+
+            // Update overlay when tiles are loaded (for faster initial display)
+            viewer.addHandler('tile-loaded', () => {
+                // Only update once per page load to avoid performance issues
+                if (!overlay) {
+                    updateOverlay();
+                }
+            });
+        }
+
+        // Convert between OSD page index and data page index in vertical mode
+        function osdIndexToDataIndex(osdIndex) {
+            if (isVertical) {
+                return data.pages.length - 1 - osdIndex;
+            }
+            return osdIndex;
+        }
+
+        function dataIndexToOsdIndex(dataIndex) {
+            if (isVertical) {
+                return data.pages.length - 1 - dataIndex;
+            }
+            return dataIndex;
+        }
+
+        function loadPage(pageIndex) {
+            if (viewer && viewer.goToPage) {
+                const osdIndex = dataIndexToOsdIndex(pageIndex);
+                console.log('loadPage: dataIndex', pageIndex, '→ osdIndex', osdIndex, 'isVertical:', isVertical);
+                viewer.goToPage(osdIndex);
+            }
+        }
+
+        function onPageChanged(osdPageIndex) {
+            // Convert OSD page index to data index
+            const dataPageIndex = osdIndexToDataIndex(osdPageIndex);
+            console.log('onPageChanged: osdIndex', osdPageIndex, '→ dataIndex', dataPageIndex, 'isVertical:', isVertical);
+            currentPageIndex = dataPageIndex;
+            selectedLineIndex = -1;
+            const page = data.pages[dataPageIndex];
+
+            if (!page) return;
+
+            // Update URL with current page (use data index, not OSD index)
+            updateURL(dataPageIndex);
+
+            displayText(page);
+            updateNavigationButtons();
+
+            // Overlay will be updated by animation-finish handler
+        }
+
+        async function updateOverlay() {
+            // Remove old overlay
+            if (overlay) {
+                try {
+                    viewer.removeOverlay(overlay);
+                } catch (e) {
+                    // Ignore errors
+                }
+                overlay = null;
+            }
+
+            // Don't add overlay if boxes are hidden
+            if (!showBoxes) return;
+
+            // Check viewer is ready
+            if (!viewer || !viewer.world || viewer.world.getItemCount() === 0) {
+                return;
+            }
+
+            // Get current page data
+            const page = data.pages[currentPageIndex];
+            if (!page || !page.lines || page.lines.length === 0) return;
+
+            // Get current item (always index 0 in sequence mode)
+            const currentItem = viewer.world.getItemAt(0);
+            if (!currentItem) {
+                return;
+            }
+
+            // Wait for at least the basic image info to be available
+            if (!currentItem.source || !currentItem.source.dimensions) {
+                return;
+            }
+
+            // If width/height is negative, fetch from IIIF (lazy loading)
+            if (page.width < 0 || page.height < 0) {
+                const iiifService = page.iiifService;
+                if (iiifService) {
+                    try {
+                        const infoUrl = iiifService + '/info.json';
+                        const response = await fetch(infoUrl);
+                        if (response.ok) {
+                            const info = await response.json();
+                            page.width = info.width;
+                            page.height = info.height;
+                        }
+                    } catch (e) {
+                        console.warn('Failed to fetch IIIF info.json:', e);
+                        return;
+                    }
+                }
+            }
+
+            // Skip if no valid dimensions
+            if (page.width <= 0 || page.height <= 0) return;
+
+            // Create canvas
+            const canvas = document.createElement('canvas');
+            canvas.width = page.width;
+            canvas.height = page.height;
+            const ctx = canvas.getContext('2d');
+
+            // Draw all lines
+            page.lines.forEach((line, idx) => {
+                if (!line.coords || line.coords.length === 0) return;
+
+                // Different color for selected line
+                if (idx === selectedLineIndex) {
+                    ctx.strokeStyle = 'rgba(0, 255, 0, 0.9)';
+                    ctx.lineWidth = 6;
+                    ctx.fillStyle = 'rgba(0, 255, 0, 0.2)';
+                } else {
+                    ctx.strokeStyle = 'rgba(255, 0, 0, 0.8)';
+                    ctx.lineWidth = 5;
+                    ctx.fillStyle = 'rgba(255, 0, 0, 0.15)';
+                }
+
+                ctx.beginPath();
+                ctx.moveTo(line.coords[0][0], line.coords[0][1]);
+                for (let i = 1; i < line.coords.length; i++) {
+                    ctx.lineTo(line.coords[i][0], line.coords[i][1]);
+                }
+                ctx.closePath();
+                ctx.stroke();
+                ctx.fill();
+            });
+
+            // Add overlay to viewer
+            const rect = currentItem.imageToViewportRectangle(0, 0, page.width, page.height);
+            viewer.addOverlay({
+                element: canvas,
+                location: rect,
+                placement: OpenSeadragon.Placement.TOP_LEFT
+            });
+
+            overlay = canvas;
+        }
+
+        function displayText(page) {
+            const textContent = document.getElementById('text-content');
+            textContent.innerHTML = '';
+
+            if (!page.lines || page.lines.length === 0) {
+                textContent.innerHTML = '<p style="color: #7f8c8d;">テキストがありません</p>';
+                return;
+            }
+
+            page.lines.forEach((line, index) => {
+                const lineDiv = document.createElement('div');
+                lineDiv.className = 'text-line';
+                lineDiv.innerHTML = `<span class="line-number">${line.n || index + 1}</span>${line.text}`;
+                lineDiv.dataset.index = index;
+
+                lineDiv.addEventListener('click', () => {
+                    highlightLine(index);
+                });
+
+                textContent.appendChild(lineDiv);
+            });
+        }
+
+        function highlightLine(index) {
+            document.querySelectorAll('.text-line').forEach((el, idx) => {
+                if (idx === index) {
+                    el.classList.add('selected');
+                    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                } else {
+                    el.classList.remove('selected');
+                }
+            });
+
+            selectedLineIndex = index;
+            updateOverlay();
+        }
+
+        function searchText(query) {
+            if (!query) {
+                document.querySelectorAll('.text-line').forEach(el => {
+                    el.classList.remove('highlight');
+                });
+                return;
+            }
+
+            const lines = document.querySelectorAll('.text-line');
+            lines.forEach(el => {
+                const text = el.textContent;
+                if (text.includes(query)) {
+                    el.classList.add('highlight');
+                } else {
+                    el.classList.remove('highlight');
+                }
+            });
+        }
+
+        function openSearchModal() {
+            const modal = document.getElementById('search-modal');
+            modal.classList.add('active');
+            document.getElementById('global-search-input').focus();
+        }
+
+        function closeSearchModal() {
+            const modal = document.getElementById('search-modal');
+            modal.classList.remove('active');
+            document.getElementById('global-search-input').value = '';
+            document.getElementById('search-results').innerHTML = '<div id="search-status">検索キーワードを入力してください</div>';
+        }
+
+        function globalSearch(query) {
+            const resultsContainer = document.getElementById('search-results');
+
+            if (!query || query.trim() === '') {
+                resultsContainer.innerHTML = '<div id="search-status">検索キーワードを入力してください</div>';
+                return;
+            }
+
+            const results = [];
+
+            // Search through all pages
+            data.pages.forEach((page, pageIndex) => {
+                if (!page.lines) return;
+
+                page.lines.forEach((line, lineIndex) => {
+                    if (line.text.includes(query)) {
+                        results.push({
+                            pageIndex: pageIndex,
+                            pageName: page.n || (pageIndex + 1),
+                            lineIndex: lineIndex,
+                            lineNumber: line.n || (lineIndex + 1),
+                            text: line.text
+                        });
+                    }
+                });
+            });
+
+            if (results.length === 0) {
+                resultsContainer.innerHTML = '<div id="search-status">検索結果が見つかりませんでした</div>';
+                return;
+            }
+
+            // Display results
+            let html = `<div id="search-status">${results.length}件の検索結果</div>`;
+            results.forEach(result => {
+                const highlightedText = result.text.replace(
+                    new RegExp(escapeRegExp(query), 'g'),
+                    match => `<mark>${match}</mark>`
+                );
+
+                html += `
+                    <div class="search-result-item" data-page="${result.pageIndex}" data-line="${result.lineIndex}">
+                        <div class="search-result-page">ページ ${result.pageName}</div>
+                        <div class="search-result-text">${highlightedText}</div>
+                    </div>
+                `;
+            });
+
+            resultsContainer.innerHTML = html;
+
+            // Add click handlers
+            document.querySelectorAll('.search-result-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    const pageIndex = parseInt(item.dataset.page);
+                    const lineIndex = parseInt(item.dataset.line);
+                    goToSearchResult(pageIndex, lineIndex);
+                });
+            });
+        }
+
+        function escapeRegExp(string) {
+            return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        }
+
+        function goToSearchResult(pageIndex, lineIndex) {
+            closeSearchModal();
+
+            // Navigate to page
+            if (pageIndex !== currentPageIndex) {
+                loadPage(pageIndex);
+            }
+
+            // Highlight the line after a short delay to ensure page is loaded
+            setTimeout(() => {
+                highlightLine(lineIndex);
+            }, 500);
+        }
+
+        // Start loading on page load
+        window.addEventListener('load', () => {
+            const filename = getFileParameter();
+
+            // Set back link based on collection context
+            const params = new URLSearchParams(window.location.search);
+            const collectionUrl = params.get('u');
+            const backLink = document.getElementById('back-link');
+
+            if (collectionUrl) {
+                // If collection URL parameter exists, link back to that collection
+                backLink.href = `collection.html?u=${encodeURIComponent(collectionUrl)}`;
+            } else {
+                // No collection context, hide the back link
+                backLink.style.display = 'none';
+            }
+
+            loadTEIFile(filename);
+        });
+    </script>
+</body>
+</html>
