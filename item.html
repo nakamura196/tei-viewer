@@ -511,8 +511,23 @@
                 if (!graphic) continue;
 
                 const imageUrl = graphic.getAttribute('url') || '';
-                let width = parseInt(surface.getAttribute('lrx')) || 0;
-                let height = parseInt(surface.getAttribute('lry')) || 0;
+
+                // Try to get width/height from graphic element first (new format)
+                let width = 0;
+                let height = 0;
+
+                const graphicWidth = graphic.getAttribute('width');
+                const graphicHeight = graphic.getAttribute('height');
+
+                if (graphicWidth && graphicHeight) {
+                    // New format: <graphic width="7360px" height="2456px" />
+                    width = parseInt(graphicWidth.replace('px', '')) || 0;
+                    height = parseInt(graphicHeight.replace('px', '')) || 0;
+                } else {
+                    // Old format: <surface lrx="..." lry="..." />
+                    width = parseInt(surface.getAttribute('lrx')) || 0;
+                    height = parseInt(surface.getAttribute('lry')) || 0;
+                }
 
                 // Extract zones
                 const zones = [];
