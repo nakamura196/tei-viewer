@@ -22,6 +22,12 @@ TEI XMLファイルとDTS Collections形式のコレクションを閲覧する�
   - 全ページ横断検索機能
   - ページ内テキスト検索
   - 縦書きモード対応（右から左への読み進め）
+  - **校訂表示機能**: TEI `<choice><sic>...</sic><corr>...</corr></choice>` 形式の校訂情報に対応
+    - 標準: 修正後のテキストのみ表示（通常のテキストと同じスタイル）
+    - 両方: 元テキスト→修正後を両方表示
+    - 修正後: 修正後のテキストのみ表示（緑色でハイライト）
+    - 修正前: 元テキストのみ表示（赤色でハイライト）
+  - レスポンシブデザイン（モバイル・タブレット対応）
 
 ## 使い方
 
@@ -79,6 +85,8 @@ URLパラメータ:
 - `page`: 初期表示ページ番号（オプション、デフォルト: 1）
 - `vertical`: 縦書きモード（`true`で有効、デフォルト: false）
 - `u`: コレクションURL（オプション、collection.htmlへの戻るリンクを生成）
+- `mode`: 校訂表示モード（`normal`/`both`/`corrected`/`original`、デフォルト: normal）
+- `boxes`: 枠線表示（`false`で非表示、デフォルト: true）
 
 **例:**
 
@@ -91,6 +99,12 @@ http://localhost:8000/item.html?file=001-01.xml&page=3&vertical=true
 
 # 外部URLから読み込み
 http://localhost:8000/item.html?file=https://example.com/tei/001-01.xml&vertical=true
+
+# 校訂を両方表示モードで開く
+http://localhost:8000/item.html?file=001-01.xml&mode=both
+
+# 枠線非表示で開く
+http://localhost:8000/item.html?file=001-01.xml&boxes=false
 ```
 
 ## ファイル構成
@@ -181,6 +195,15 @@ http://localhost:8000/item.html?file=https://example.com/tei/001-01.xml&vertical
 - `<surface>`: 画像ページの情報
 - `<graphic>`: IIIF画像URL
 - `<zone>`: 行の座標情報（ulx, uly, lrx, lry）
+- `<choice>`: 校訂情報のコンテナ
+  - `<sic>`: 元のテキスト（誤り）
+  - `<corr>`: 修正後のテキスト
+
+### 校訂マークアップ例
+
+```xml
+<lb corresp="#z1_l1" n="1"/>これは<choice><sic>誤り</sic><corr>正しい</corr></choice>テキストです
+```
 
 ## CORS設定について
 

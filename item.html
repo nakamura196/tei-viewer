@@ -25,46 +25,45 @@
         #header {
             background: #2c3e50;
             color: white;
-            padding: 15px 20px;
+            padding: 8px 15px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            gap: 15px;
-        }
-
-        #header h1 {
-            font-size: 20px;
-            font-weight: 500;
-            flex: 1;
-        }
-
-        .header-links {
-            display: flex;
             gap: 10px;
         }
 
-        #home-link,
-        #back-link,
-        #xml-link {
-            color: #3498db;
+        #header h1 {
+            font-size: 16px;
+            font-weight: 500;
+            flex: 1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .header-controls {
+            display: flex;
+            gap: 5px;
+        }
+
+        .header-controls a {
+            color: white;
             text-decoration: none;
-            padding: 8px 15px;
-            background: white;
+            padding: 5px 10px;
+            background: rgba(255,255,255,0.1);
             border-radius: 4px;
-            font-size: 14px;
+            font-size: 13px;
             transition: background 0.2s;
         }
 
-        #home-link:hover,
-        #back-link:hover,
-        #xml-link:hover {
-            background: #ecf0f1;
+        .header-controls a:hover {
+            background: rgba(255,255,255,0.2);
         }
 
         #main-container {
             display: flex;
-            height: calc(100vh - 60px);
+            height: calc(100vh - 45px);
         }
 
         #viewer-panel {
@@ -127,9 +126,10 @@
         }
 
         #page-selector {
-            flex: 1;
-            padding: 8px;
-            font-size: 14px;
+            width: auto;
+            max-width: 200px;
+            padding: 6px 8px;
+            font-size: 13px;
             border: 1px solid #bdc3c7;
             border-radius: 4px;
             background: white;
@@ -192,50 +192,168 @@
             direction: rtl;
         }
 
-        #toggle-boxes {
-            margin-top: 10px;
-            padding: 8px 15px;
-            background: #3498db;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 14px;
-            width: 100%;
-            transition: background 0.2s;
-        }
-
-        #toggle-boxes:hover {
-            background: #2980b9;
-        }
-
-        #toggle-boxes.active {
-            background: #27ae60;
-        }
-
-        #toggle-boxes.active:hover {
-            background: #229954;
-        }
-
-        #toggle-boxes.inactive {
-            background: #95a5a6;
-        }
-
-        #toggle-boxes.inactive:hover {
-            background: #7f8c8d;
-        }
-
         #search-box {
-            margin-top: 10px;
-            padding: 8px;
+            margin-top: 8px;
+            padding: 6px 10px;
             width: 100%;
             border: 1px solid #bdc3c7;
             border-radius: 4px;
-            font-size: 14px;
+            font-size: 13px;
         }
 
         .highlight {
             background-color: #fff59d;
+        }
+
+        /* Correction display styles */
+        .correction {
+            display: inline;
+            cursor: help;
+        }
+
+        .correction .sic {
+            text-decoration: line-through;
+            color: #e74c3c;
+            opacity: 0.7;
+            font-size: 0.9em;
+        }
+
+        .correction .corr {
+            color: #27ae60;
+            font-weight: bold;
+        }
+
+        .correction .arrow {
+            color: #7f8c8d;
+            margin: 0 3px;
+            font-size: 0.8em;
+        }
+
+        /* Toggle for showing/hiding corrections */
+        /* Mode: show-normal - 標準表示（修正後のみ、色変更なし） */
+        .show-normal .correction .sic,
+        .show-normal .correction .arrow {
+            display: none;
+        }
+        .show-normal .correction .corr {
+            display: inline;
+            color: inherit;
+            font-weight: inherit;
+        }
+
+        /* Mode: show-both - 元→修正後 両方表示 */
+        .show-both .correction .sic,
+        .show-both .correction .arrow,
+        .show-both .correction .corr {
+            display: inline;
+        }
+
+        /* Mode: show-corrected - 修正後のみ表示（緑色） */
+        .show-corrected .correction .sic,
+        .show-corrected .correction .arrow {
+            display: none;
+        }
+        .show-corrected .correction .corr {
+            display: inline;
+        }
+
+        /* Mode: show-original - 元のみ表示（sicを赤字で表示） */
+        .show-original .correction .sic {
+            display: inline;
+            text-decoration: none;
+            color: #e74c3c;
+            opacity: 1;
+            font-size: inherit;
+        }
+        .show-original .correction .arrow {
+            display: none;
+        }
+        .show-original .correction .corr {
+            display: none;
+        }
+
+        /* Toolbar styles */
+        #toolbar {
+            display: flex;
+            gap: 10px;
+            margin-top: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        /* Toolbar group container */
+        .toolbar-group {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 5px 10px;
+            background: #f0f0f0;
+            border-radius: 4px;
+            flex-wrap: nowrap;
+        }
+
+        .toolbar-group-label {
+            font-size: 11px;
+            color: #666;
+            white-space: nowrap;
+        }
+
+        /* Button group (for grouped buttons) */
+        .btn-group {
+            display: inline-flex;
+            border-radius: 4px;
+            overflow: hidden;
+            border: 1px solid #bdc3c7;
+        }
+
+        .btn-group .group-btn {
+            padding: 4px 8px;
+            background: white;
+            color: #7f8c8d;
+            border: none;
+            border-right: 1px solid #bdc3c7;
+            cursor: pointer;
+            font-size: 11px;
+        }
+
+        .btn-group .group-btn:last-child {
+            border-right: none;
+        }
+
+        .btn-group .group-btn:hover {
+            background: #ecf0f1;
+        }
+
+        .btn-group .group-btn.active {
+            background: #3498db;
+            color: white;
+        }
+
+        /* Search input and button */
+        #search-box,
+        #open-search-modal {
+            padding: 4px 8px;
+            font-size: 11px;
+            border: 1px solid #bdc3c7;
+            border-radius: 4px;
+            vertical-align: middle;
+            margin: 0;
+        }
+
+        #search-box {
+            width: 130px;
+            background: white;
+        }
+
+        #open-search-modal {
+            background: #3498db;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        #open-search-modal:hover {
+            background: #2980b9;
         }
 
         #loading {
@@ -376,23 +494,6 @@
             padding: 20px;
         }
 
-        #open-search-modal {
-            margin-top: 10px;
-            padding: 8px 15px;
-            background: #e67e22;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 14px;
-            width: 100%;
-            transition: background 0.2s;
-        }
-
-        #open-search-modal:hover {
-            background: #d35400;
-        }
-
         @media (max-width: 1024px) {
             #main-container {
                 flex-direction: column;
@@ -423,19 +524,12 @@
             }
 
             #header h1 {
-                font-size: 18px;
+                font-size: 14px;
             }
 
-            .header-links {
-                width: 100%;
-                justify-content: flex-start;
-            }
-
-            #home-link,
-            #back-link,
-            #xml-link {
-                padding: 6px 12px;
-                font-size: 13px;
+            .header-controls a {
+                padding: 4px 8px;
+                font-size: 12px;
             }
 
             #controls {
@@ -463,11 +557,13 @@
                 padding: 6px;
             }
 
-            #toggle-boxes,
-            #open-search-modal,
             #search-box {
                 font-size: 13px;
-                padding: 6px 12px;
+            }
+
+            .toolbar-btn, .corr-btn {
+                font-size: 11px;
+                padding: 5px 8px;
             }
 
             #text-content {
@@ -498,15 +594,12 @@
                 font-size: 16px;
             }
 
-            #home-link,
-            #back-link,
-            #xml-link {
-                padding: 5px 10px;
-                font-size: 12px;
-            }
-
             #controls {
                 padding: 8px;
+            }
+
+            .correction-btn-group {
+                flex-wrap: wrap;
             }
 
             #page-navigation {
@@ -545,10 +638,10 @@
 
     <div id="header">
         <h1 id="doc-title">TEI Viewer</h1>
-        <div class="header-links">
-            <a id="home-link" href="index.html">🏠 ホーム</a>
-            <a id="back-link" href="collection.html">← Collection</a>
-            <a id="xml-link" href="#" target="_blank">TEI/XML を表示</a>
+        <div class="header-controls">
+            <a id="back-link" href="collection.html" title="コレクションに戻る">←</a>
+            <a id="xml-link" href="#" target="_blank" title="XMLを表示">XML</a>
+            <a id="home-link" href="index.html" title="ホーム">🏠</a>
         </div>
     </div>
 
@@ -565,9 +658,27 @@
                     <button class="nav-button" id="next-page">▶</button>
                     <select id="page-selector"></select>
                 </div>
-                <button id="toggle-boxes">枠線を表示/非表示</button>
-                <button id="open-search-modal">🔍 全ページ検索</button>
-                <input type="text" id="search-box" placeholder="現在のページ内検索...">
+                <div id="toolbar">
+                    <!-- 検索グループ -->
+                    <div class="toolbar-group">
+                        <span class="toolbar-group-label">検索</span>
+                        <input type="text" id="search-box" placeholder="ページ内...">
+                        <button id="open-search-modal" title="全ページ検索">全体</button>
+                    </div>
+                    <!-- 表示グループ -->
+                    <div class="toolbar-group">
+                        <span class="toolbar-group-label">表示</span>
+                        <div class="btn-group">
+                            <button id="toggle-boxes" class="group-btn active" title="枠線表示">枠線</button>
+                        </div>
+                        <div id="correction-buttons" class="btn-group">
+                            <button id="btn-show-normal" class="group-btn active" title="標準表示">標準</button>
+                            <button id="btn-show-both" class="group-btn" title="元→修正後">両方</button>
+                            <button id="btn-show-corrected" class="group-btn" title="修正後のみ">修正後</button>
+                            <button id="btn-show-original" class="group-btn" title="修正前のみ">修正前</button>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div id="text-content"></div>
         </div>
@@ -596,6 +707,8 @@
         let showBoxes = true;
         let selectedLineIndex = -1;
         let isVertical = false;
+        let correctionDisplayMode = 'normal';  // 'normal', 'both', 'corrected', 'original'
+        let hasCorrections = false;   // Track if document has corrections
 
         // Get file parameter from URL
         function getFileParameter() {
@@ -627,10 +740,39 @@
             return params.get('vertical') === 'true';
         }
 
-        // Update URL with current page
+        // Get display mode parameter from URL
+        function getModeParameter() {
+            const params = new URLSearchParams(window.location.search);
+            const mode = params.get('mode');
+            // Validate mode value
+            if (['normal', 'both', 'corrected', 'original'].includes(mode)) {
+                return mode;
+            }
+            return 'normal'; // default
+        }
+
+        // Get boxes parameter from URL
+        function getBoxesParameter() {
+            const params = new URLSearchParams(window.location.search);
+            const boxes = params.get('boxes');
+            if (boxes === 'false') return false;
+            return true; // default is true
+        }
+
+        // Update URL with current state
         function updateURL(pageIndex) {
             const params = new URLSearchParams(window.location.search);
             params.set('page', pageIndex + 1); // Convert 0-based to 1-based
+            if (correctionDisplayMode !== 'normal') {
+                params.set('mode', correctionDisplayMode);
+            } else {
+                params.delete('mode');
+            }
+            if (!showBoxes) {
+                params.set('boxes', 'false');
+            } else {
+                params.delete('boxes');
+            }
             const newURL = window.location.pathname + '?' + params.toString();
             window.history.pushState({ page: pageIndex }, '', newURL);
         }
@@ -730,6 +872,36 @@
                 if (p) {
                     let currentPageIdx = -1;
 
+                    // Helper function to extract content after lb element (including choice elements)
+                    function extractContentAfterLb(lbElem) {
+                        let content = '';
+                        let hasChoiceElements = false;
+                        let sibling = lbElem.nextSibling;
+
+                        while (sibling) {
+                            // Stop at next lb, pb, or other block element
+                            if (sibling.nodeType === Node.ELEMENT_NODE &&
+                                (sibling.tagName === 'lb' || sibling.tagName === 'pb')) {
+                                break;
+                            }
+
+                            if (sibling.nodeType === Node.TEXT_NODE) {
+                                content += sibling.textContent;
+                            } else if (sibling.nodeType === Node.ELEMENT_NODE && sibling.tagName === 'choice') {
+                                // Handle <choice><sic>...</sic><corr>...</corr></choice>
+                                hasChoiceElements = true;
+                                const sic = sibling.querySelector('sic');
+                                const corr = sibling.querySelector('corr');
+                                if (sic && corr) {
+                                    content += `<choice><sic>${sic.textContent}</sic><corr>${corr.textContent}</corr></choice>`;
+                                }
+                            }
+                            sibling = sibling.nextSibling;
+                        }
+
+                        return { content: content.trim(), hasChoiceElements };
+                    }
+
                     Array.from(p.children).forEach(elem => {
                         if (elem.tagName === 'pb') {
                             currentPageIdx++;
@@ -739,12 +911,11 @@
                                 const zoneId = corresp.replace('#', '');
                                 const lineNum = elem.getAttribute('n') || '';
 
-                                // Try to get text from both textContent and nextSibling
-                                let textContent = '';
-                                if (elem.textContent && elem.textContent.trim()) {
-                                    textContent = elem.textContent;
-                                } else if (elem.nextSibling && elem.nextSibling.nodeType === Node.TEXT_NODE) {
-                                    textContent = elem.nextSibling.textContent;
+                                // Extract text content including choice elements
+                                const { content: textContent, hasChoiceElements } = extractContentAfterLb(elem);
+
+                                if (hasChoiceElements) {
+                                    hasCorrections = true;
                                 }
 
                                 // Find matching zone
@@ -756,12 +927,13 @@
                                     }
                                 }
 
-                                if (zoneCoords && textContent.trim()) {
+                                if (zoneCoords && textContent) {
                                     pages[currentPageIdx].lines.push({
                                         n: lineNum,
-                                        text: textContent.trim(),
+                                        text: textContent,
                                         coords: zoneCoords,
-                                        zoneId: zoneId
+                                        zoneId: zoneId,
+                                        hasCorrections: hasChoiceElements
                                     });
                                 }
                             }
@@ -834,6 +1006,10 @@
                 document.getElementById('openseadragon').classList.add('rtl-mode');
             }
 
+            // Apply display mode from URL parameter
+            correctionDisplayMode = getModeParameter();
+            showBoxes = getBoxesParameter();
+
             data.pages.forEach((page, index) => {
                 const option = document.createElement('option');
                 option.value = index;
@@ -878,6 +1054,7 @@
                 showBoxes = !showBoxes;
                 updateToggleButton();
                 updateOverlay();
+                updateURL(currentPageIndex);
             });
 
             // Initialize button state
@@ -906,6 +1083,23 @@
             document.getElementById('global-search-input').addEventListener('input', (e) => {
                 globalSearch(e.target.value);
             });
+
+            // Correction display buttons (4 buttons: normal, both, corrected, original)
+            document.getElementById('btn-show-normal').addEventListener('click', () => {
+                setCorrectionMode('normal');
+            });
+            document.getElementById('btn-show-both').addEventListener('click', () => {
+                setCorrectionMode('both');
+            });
+            document.getElementById('btn-show-corrected').addEventListener('click', () => {
+                setCorrectionMode('corrected');
+            });
+            document.getElementById('btn-show-original').addEventListener('click', () => {
+                setCorrectionMode('original');
+            });
+
+            // Initialize correction buttons state
+            updateCorrectionButtons();
 
             // Initialize OpenSeadragon with all pages
             // (initialPage is set in initializeViewer)
@@ -939,13 +1133,44 @@
         function updateToggleButton() {
             const toggleButton = document.getElementById('toggle-boxes');
             if (showBoxes) {
-                toggleButton.textContent = '✓ 枠線を表示中';
-                toggleButton.classList.remove('inactive');
+                toggleButton.textContent = '枠線';
                 toggleButton.classList.add('active');
             } else {
-                toggleButton.textContent = '枠線を非表示中';
+                toggleButton.textContent = '枠線';
                 toggleButton.classList.remove('active');
-                toggleButton.classList.add('inactive');
+            }
+        }
+
+        function setCorrectionMode(mode) {
+            correctionDisplayMode = mode;
+            updateCorrectionButtons();
+            // Re-display current page with new setting
+            if (data && data.pages[currentPageIndex]) {
+                displayText(data.pages[currentPageIndex]);
+            }
+            // Update URL with new mode
+            updateURL(currentPageIndex);
+        }
+
+        function updateCorrectionButtons() {
+            const btnNormal = document.getElementById('btn-show-normal');
+            const btnBoth = document.getElementById('btn-show-both');
+            const btnCorrected = document.getElementById('btn-show-corrected');
+            const btnOriginal = document.getElementById('btn-show-original');
+
+            btnNormal.classList.remove('active');
+            btnBoth.classList.remove('active');
+            btnCorrected.classList.remove('active');
+            btnOriginal.classList.remove('active');
+
+            if (correctionDisplayMode === 'normal') {
+                btnNormal.classList.add('active');
+            } else if (correctionDisplayMode === 'both') {
+                btnBoth.classList.add('active');
+            } else if (correctionDisplayMode === 'corrected') {
+                btnCorrected.classList.add('active');
+            } else {
+                btnOriginal.classList.add('active');
             }
         }
 
@@ -1197,6 +1422,10 @@
             const textContent = document.getElementById('text-content');
             textContent.innerHTML = '';
 
+            // Apply correction display mode class
+            textContent.classList.remove('show-normal', 'show-both', 'show-corrected', 'show-original');
+            textContent.classList.add('show-' + correctionDisplayMode);
+
             if (!page.lines || page.lines.length === 0) {
                 textContent.innerHTML = '<p style="color: #7f8c8d;">テキストがありません</p>';
                 return;
@@ -1205,7 +1434,11 @@
             page.lines.forEach((line, index) => {
                 const lineDiv = document.createElement('div');
                 lineDiv.className = 'text-line';
-                lineDiv.innerHTML = `<span class="line-number">${line.n || index + 1}</span>${line.text}`;
+
+                // Convert <choice><sic>...</sic><corr>...</corr></choice> to HTML
+                const displayText = convertChoiceToHtml(line.text);
+
+                lineDiv.innerHTML = `<span class="line-number">${line.n || index + 1}</span>${displayText}`;
                 lineDiv.dataset.index = index;
 
                 lineDiv.addEventListener('click', () => {
@@ -1214,6 +1447,23 @@
 
                 textContent.appendChild(lineDiv);
             });
+        }
+
+        // Convert <choice><sic>...</sic><corr>...</corr></choice> markup to displayable HTML
+        function convertChoiceToHtml(text) {
+            // Pattern: <choice><sic>元テキスト</sic><corr>修正後テキスト</corr></choice>
+            const choiceRegex = /<choice><sic>([^<]*)<\/sic><corr>([^<]*)<\/corr><\/choice>/g;
+
+            return text.replace(choiceRegex, (match, sic, corr) => {
+                return `<span class="correction" title="元: ${escapeHtml(sic)} → 修正: ${escapeHtml(corr)}"><span class="sic">${escapeHtml(sic)}</span><span class="arrow">→</span><span class="corr">${escapeHtml(corr)}</span></span>`;
+            });
+        }
+
+        // Escape HTML special characters
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
         }
 
         function highlightLine(index) {
