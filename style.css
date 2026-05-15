@@ -1,0 +1,162 @@
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Hiragino Sans", "Yu Gothic", sans-serif;
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 2em 1em;
+  line-height: 1.7;
+  color: #2a2a2a;
+  position: relative;
+}
+
+header h1 {
+  color: #539a48;
+  font-size: 1.6em;
+  border-bottom: 3px solid #539a48;
+  padding-bottom: 0.3em;
+  margin-bottom: 0.2em;
+}
+
+.subtitle {
+  color: #888;
+  font-size: 0.9em;
+  margin-top: 0;
+  margin-bottom: 2em;
+}
+
+section h2 {
+  color: #539a48;
+  margin-top: 2.2em;
+  font-size: 1.3em;
+}
+
+section h3 {
+  color: #456;
+  margin-top: 1.5em;
+  font-size: 1.1em;
+}
+
+p {
+  margin: 1.5em 0;
+}
+
+ul, ol {
+  margin: 0.8em 0;
+  padding-left: 2em;
+}
+
+.note-wrapper {
+  position: relative;
+  display: inline-block;
+  cursor: help;
+}
+
+.note-ref {
+  color: #c33;
+  font-size: 0.85em;
+}
+
+.note-wrapper .tooltip {
+  visibility: hidden;
+  opacity: 0;
+  width: max-content;
+  max-width: 280px;
+  background-color: #fffde7;
+  color: #333;
+  text-align: left;
+  border-radius: 6px;
+  padding: 0.8em;
+  position: absolute;
+  z-index: 10;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+  transition: opacity 0.3s, bottom 0.3s;
+  font-size: 0.85rem;
+  font-weight: normal;
+  line-height: 1.5;
+  white-space: normal;
+}
+
+.note-wrapper:hover .tooltip {
+  visibility: visible;
+  opacity: 1;
+  bottom: 140%;
+}
+
+.toc {
+  background: #f8f9f8;
+  padding: 1.5em;
+  border-radius: 8px;
+  margin-bottom: 2.5em;
+  border: 1px solid #e0e6e0;
+}
+
+.toc h2 {
+  margin-top: 0;
+  font-size: 1.2em;
+  color: #333;
+  border-bottom: none;
+}
+
+.toc ul {
+  list-style: none;
+  padding-left: 0;
+  margin-bottom: 0;
+}
+
+.toc li {
+  margin: 0.6em 0;
+}
+
+.toc a {
+  text-decoration: none;
+  color: #539a48;
+}
+
+.toc a:hover {
+  text-decoration: underline;
+}
+
+.toc ul ul {
+  padding-left: 1.5em;
+  margin-top: 0.3em;
+}
+
+/* 言語切り替えボタンのスタイル */
+.lang-toggle {
+  position: absolute;
+  top: 1.5em;
+  right: 1em;
+  display: flex;
+  gap: 0.5em;
+}
+
+.lang-toggle button {
+  cursor: pointer;
+  border: 1px solid #539a48;
+  background: #fff;
+  color: #539a48;
+  padding: 0.3em 0.8em;
+  border-radius: 4px;
+  font-size: 0.85em;
+  transition: all 0.2s ease-in-out;
+}
+
+.lang-toggle button:hover {
+  background: #e8f3e6;
+}
+
+.lang-toggle button.active {
+  background: #539a48;
+  color: #fff;
+}
+
+/* 言語切り替えの表示制御 */
+body.lang-en [lang="ja"] {
+  display: none;
+}
+
+body.lang-ja [lang="en"] {
+  display: none;
+}
