@@ -2,10 +2,29 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <meta http-equiv="refresh" content="0; url=tei.xml">
-  <title>Redirecting...</title>
+  <title>TEI/XML Encoding Guide / TEI/XMLエンコーディング入門</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/gh/TEIC/CETEIcean/dist/CETEI.min.js"></script>
+  <script src="app.js" defer></script>
 </head>
-<body>
-  <p><a href="tei.xml">こちら</a>へ自動転送されます。</p>
+<body class="lang-both">
+  <div class="lang-toggle">
+    <button id="btn-en">EN</button>
+    <button id="btn-ja">JA</button>
+    <button id="btn-both" class="active">両方</button>
+  </div>
+  <header>
+    <h1>TEI/XML Encoding Guide / TEI/XMLエンコーディング入門</h1>
+    <p class="subtitle">TEI/XML 入門ガイドのデモページ</p>
+  </header>
+  <main>
+    <nav class="toc">
+      <h2>目次</h2>
+      <ul id="toc-list">
+        <!-- 目次はJavaScriptで動的に生成されます -->
+      </ul>
+    </nav>
+    <div id="content"></div>
+  </main>
 </body>
 </html>

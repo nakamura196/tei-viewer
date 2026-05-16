@@ -23,27 +23,59 @@ header h1 {
   margin-bottom: 2em;
 }
 
-section h2 {
+/* CETEIcean Elements */
+tei-teiheader {
+  display: none;
+}
+
+tei-div {
+  display: block;
+}
+
+tei-div > tei-head {
+  display: block;
   color: #539a48;
   margin-top: 2.2em;
   font-size: 1.3em;
+  font-weight: bold;
 }
 
-section h3 {
+tei-div tei-div tei-head {
   color: #456;
   margin-top: 1.5em;
   font-size: 1.1em;
 }
 
-p {
+tei-p {
+  display: block;
   margin: 1.5em 0;
 }
 
-ul, ol {
+tei-hi[rend='bold'] {
+  font-weight: bold;
+}
+
+tei-hi[rend='italic'] {
+  font-style: italic;
+}
+
+tei-list {
+  display: block;
   margin: 0.8em 0;
   padding-left: 2em;
 }
 
+tei-list[rend='bulleted'] tei-item {
+  display: list-item;
+  list-style: disc;
+}
+
+tei-list[rend='numbered'] tei-item {
+  display: list-item;
+  list-style: decimal;
+}
+
+/* 脚注ツールチップ用のスタイル */
 .note-wrapper {
   position: relative;
   display: inline-block;
@@ -84,6 +116,7 @@ ul, ol {
   bottom: 140%;
 }
 
+/* 目次のスタイル */
 .toc {
   background: #f8f9f8;
   padding: 1.5em;
@@ -153,10 +186,10 @@ ul, ol {
 }
 
 /* 言語切り替えの表示制御 */
-body.lang-en [lang="ja"] {
+body.lang-en [xml\:lang="ja"] {
   display: none;
 }
 
-body.lang-ja [lang="en"] {
+body.lang-ja [xml\:lang="en"] {
   display: none;
 }
